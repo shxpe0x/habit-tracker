@@ -1,0 +1,319 @@
+@import 'tailwindcss';
+@import '../../vendor/livewire/flux/dist/flux.css';
+
+@source '../views';
+@source '../../app';
+@source '../../vendor/livewire/flux';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+    /* Aurora keyframes */
+    --animate-aurora: aurora 18s ease-in-out infinite;
+    --animate-aurora-slow: aurora 28s ease-in-out infinite reverse;
+    --animate-fade-in: fade-in 0.4s ease-out;
+    --animate-slide-up: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes aurora {
+    0%, 100% {
+        transform: translate(0%, 0%) rotate(0deg) scale(1);
+        opacity: 0.55;
+    }
+    25% {
+        transform: translate(8%, -6%) rotate(45deg) scale(1.1);
+        opacity: 0.7;
+    }
+    50% {
+        transform: translate(-6%, 8%) rotate(120deg) scale(0.95);
+        opacity: 0.5;
+    }
+    75% {
+        transform: translate(-10%, -4%) rotate(200deg) scale(1.05);
+        opacity: 0.65;
+    }
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slide-up {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Reusable utilities */
+@utility card-hover {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.2s ease;
+}
+
+@utility card-hover-lift {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.2s ease;
+}
+
+.card-hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -8px rgb(0 0 0 / 0.1);
+}
+
+.card-hover-lift:active {
+    transform: translateY(0);
+    transition-duration: 0.05s;
+}
+
+/* Scrollbar — тоньше */
+@layer base {
+    .scrollbar-thin::-webkit-scrollbar {
+        height: 6px;
+        width: 6px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+        background: rgb(161 161 170 / 0.4);
+        border-radius: 9999px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+        background: rgb(161 161 170 / 0.6);
+    }
+}
+
+/* Aurora background — чистый CSS, без WebGL */
+.aurora-bg {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.aurora-bg::before,
+.aurora-bg::after {
+    content: '';
+    position: absolute;
+    inset: -25%;
+    z-index: -1;
+    filter: blur(80px);
+    pointer-events: none;
+}
+
+.aurora-bg::before {
+    background:
+        radial-gradient(at 20% 30%, rgba(99, 102, 241, 0.45) 0%, transparent 50%),
+        radial-gradient(at 80% 20%, rgba(168, 85, 247, 0.4) 0%, transparent 50%),
+        radial-gradient(at 60% 70%, rgba(236, 72, 153, 0.35) 0%, transparent 50%);
+    animation: var(--animate-aurora);
+}
+
+.aurora-bg::after {
+    background:
+        radial-gradient(at 70% 80%, rgba(56, 189, 248, 0.35) 0%, transparent 50%),
+        radial-gradient(at 30% 60%, rgba(34, 197, 94, 0.3) 0%, transparent 50%),
+        radial-gradient(at 90% 40%, rgba(251, 146, 60, 0.3) 0%, transparent 50%);
+    animation: var(--animate-aurora-slow);
+}
+
+.dark .aurora-bg::before {
+    background:
+        radial-gradient(at 20% 30%, rgba(99, 102, 241, 0.35) 0%, transparent 50%),
+        radial-gradient(at 80% 20%, rgba(168, 85, 247, 0.3) 0%, transparent 50%),
+        radial-gradient(at 60% 70%, rgba(236, 72, 153, 0.25) 0%, transparent 50%);
+}
+
+.dark .aurora-bg::after {
+    background:
+        radial-gradient(at 70% 80%, rgba(56, 189, 248, 0.25) 0%, transparent 50%),
+        radial-gradient(at 30% 60%, rgba(34, 197, 94, 0.2) 0%, transparent 50%),
+        radial-gradient(at 90% 40%, rgba(251, 146, 60, 0.2) 0%, transparent 50%);
+}
+
+/* Приглушённый вариант — для основных страниц приложения */
+.aurora-bg-subtle::before,
+.aurora-bg-subtle::after {
+    content: '';
+    position: fixed;
+    inset: -25%;
+    z-index: -1;
+    filter: blur(100px);
+    pointer-events: none;
+}
+
+.aurora-bg-subtle::before {
+    background:
+        radial-gradient(at 20% 20%, rgba(99, 102, 241, 0.18) 0%, transparent 50%),
+        radial-gradient(at 80% 30%, rgba(168, 85, 247, 0.15) 0%, transparent 50%);
+    animation: var(--animate-aurora);
+}
+
+.aurora-bg-subtle::after {
+    background:
+        radial-gradient(at 70% 80%, rgba(56, 189, 248, 0.15) 0%, transparent 50%),
+        radial-gradient(at 30% 70%, rgba(236, 72, 153, 0.12) 0%, transparent 50%);
+    animation: var(--animate-aurora-slow);
+}
+
+.dark .aurora-bg-subtle::before {
+    background:
+        radial-gradient(at 20% 20%, rgba(99, 102, 241, 0.12) 0%, transparent 50%),
+        radial-gradient(at 80% 30%, rgba(168, 85, 247, 0.1) 0%, transparent 50%);
+}
+
+.dark .aurora-bg-subtle::after {
+    background:
+        radial-gradient(at 70% 80%, rgba(56, 189, 248, 0.1) 0%, transparent 50%),
+        radial-gradient(at 30% 70%, rgba(236, 72, 153, 0.08) 0%, transparent 50%);
+}
+
+/* Уважаем prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+    .aurora-bg::before,
+    .aurora-bg::after {
+        animation: none;
+    }
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+
+/* ============================
+   Spotlight Card — следует за курсором
+   ============================ */
+.spotlight-card {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.spotlight-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: radial-gradient(
+        320px circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+        rgba(99, 102, 241, 0.18),
+        transparent 60%
+    );
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+    border-radius: inherit;
+}
+
+.spotlight-card:hover::before {
+    opacity: 1;
+}
+
+.dark .spotlight-card::before {
+    background: radial-gradient(
+        320px circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+        rgba(129, 140, 248, 0.22),
+        transparent 60%
+    );
+}
+
+.spotlight-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* ============================
+   Star Border — анимированная градиентная рамка
+   ============================ */
+@property --angle {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+}
+
+@keyframes star-border-spin {
+    to { --angle: 360deg; }
+}
+
+/* Fallback для браузеров без @property — поворачиваем псевдо-элемент */
+@keyframes star-border-spin-fallback {
+    to { transform: rotate(360deg); }
+}
+
+.star-border {
+    position: relative;
+    isolation: isolate;
+    background-clip: padding-box;
+}
+
+.star-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: conic-gradient(
+        from var(--angle),
+        transparent 0deg,
+        transparent 220deg,
+        #6366f1 280deg,
+        #a855f7 320deg,
+        #ec4899 360deg
+    );
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    animation: star-border-spin 4s linear infinite;
+}
+
+/* Если @property не поддерживается, --angle не анимируется. Делаем поворот элементом. */
+@supports not (background: conic-gradient(from var(--angle))) {
+    .star-border::before {
+        background: conic-gradient(
+            transparent 0deg,
+            transparent 220deg,
+            #6366f1 280deg,
+            #a855f7 320deg,
+            #ec4899 360deg
+        );
+        animation: star-border-spin-fallback 4s linear infinite;
+    }
+}
+
+
+/* На устройствах без hover (тач) — spotlight всегда «выключен» (показывается мягко при тапе) */
+@media (hover: none) {
+    .spotlight-card::before {
+        opacity: 0;
+    }
+    .spotlight-card:active::before {
+        opacity: 0.5;
+    }
+}
+
+
+/* ============================
+   TextType — мигающий курсор
+   ============================ */
+@keyframes text-type-cursor {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+}
+
+.text-type-cursor {
+    display: inline-block;
+    width: 0.08em;
+    margin-left: 0.04em;
+    background: currentColor;
+    animation: text-type-cursor 1s steps(2) infinite;
+}
+
+
+/* Скрываем элементы Alpine до инициализации */
+[x-cloak] { display: none !important; }
