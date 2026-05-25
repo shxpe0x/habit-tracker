@@ -1,0 +1,23 @@
+providers = ["php", "node"]
+
+[phases.setup]
+nixPkgs = ["php83", "php83Extensions.pdo_sqlite", "nodejs_20"]
+
+[phases.install]
+cmds = [
+    "composer install --no-dev --optimize-autoloader --no-interaction",
+    "npm ci",
+]
+
+[phases.build]
+cmds = [
+    "npm run build",
+    "mkdir -p database",
+    "touch database/database.sqlite",
+    "php artisan config:clear",
+    "php artisan route:cache",
+    "php artisan view:cache",
+]
+
+[start]
+cmd = "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT"
